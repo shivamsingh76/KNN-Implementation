@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>KNN Implementation</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/styles.css"> 
+</head>
+<body>
+<div id='myApp'>
+	<div class="container-fluid" id='heading'><header><nav class='navbar navbar-light bg-light'><span class="navbar-brand align-bottom">K-Nearest Neighbour Algorithm</span>
+		</nav>
+	</header>
+	</div>
+	
+	<div class="text-center" id='att-select'><span>No. of Attributes: </span>
+		<select v-model='attCount' name="cars" id="cars">
+		    <option value="1">1</option>
+		    <option value="2">2</option>
+		    <option value="3">3</option>
+		    <option value="4">4</option>
+  		</select><br>
+
+  		<span>Enter All Classes: </span>
+  		<input v-model='className' type="text" >
+  		<button class="btn btn-success" @click='addClass()'>Add</button>
+
+  		<span id='classNumber'>No. of classes : {{classList.length}}</span>
+
+	</div>
+
+	<div id='attInput'>
+		<span v-if='this.attCount >= 1'><label>Attribute 1 :&nbsp;</label><input v-model='a1' type="number" ><br><br></span>
+		<span v-if='this.attCount >= 2'><label>Attribute 2 :&nbsp;</label><input v-model='a2' type="number" ><br><br></span>
+		<span v-if='this.attCount >= 3'><label>Attribute 3 :&nbsp;</label><input v-model='a3' type="number" ><br><br></span>
+		<span v-if='this.attCount == 4'><label>Attribute 4 :&nbsp;</label><input v-model='a4' type="number" ><br><br></span>
+		<span v-if='this.attCount >= 1'><label>Class :&nbsp;</label><input v-model='className' type="text" ><br><br></span>
+
+		<button v-if='this.attCount >= 1' class='btn btn-primary' @click='pushInstance()'>Add To Dataset !</button>
+	</div>
+
+	<div  class='container-fluid'>
+	<div v-if='dataSet.length > 0' id="dataset-list" class ='text-center'>
+		<ul v-if='this.attCount == 1' class="list-group">
+			<span class='col-title'>Attribute 1   &nbsp;Class</span>
+			<li v-for='item in dataSet' class='list-group-item'>{{item.A1}}  &emsp;&emsp;:&emsp;&emsp; {{item.className}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 2' class="list-group">
+			<span class='col-title'>Attribute 1 &nbsp;Attribute 2  &nbsp;Class</span>
+			<li v-for='item in dataSet' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp;:&emsp;&emsp; {{item.className}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 3' class="list-group">
+			<span class='col-title'>Attribute 1 &nbsp; Attribute 2 &nbsp; Attribute 3 &nbsp;Class</span>
+			<li v-for='item in dataSet' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp; - &emsp;&emsp; {{item.A3}} &emsp;&emsp; : &emsp;&emsp; {{item.className}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 4' class="list-group">
+			<span class='col-title'>Attribute 1 &nbsp; Attribute 2 &nbsp; Attribute 3 &nbsp; Attribute 4 &nbsp;Class</span>
+			<li v-for='item in dataSet' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp; - &emsp;&emsp; {{item.A3}} &emsp;&emsp; - &emsp;&emsp; {{item.A4}} &emsp;&emsp; : &emsp;&emsp; {{item.className}}</li>
+		</ul>
+	</div>
+	</div>
+
+	
+
+
+	<div v-if='state === "output-1"' class='container-fluid'>
+	<div v-if='dataSet.length > 0' id="dataset-list" class ='text-center'>
+		<ul v-if='this.attCount == 1' class="list-group">
+			<span class='col-title'>Attribute 1   &emsp; Class  &emsp; Distance &emsp; Neighbour</span>
+			<li v-for='item in output1' class='list-group-item'>{{item.A1}}  &emsp;&emsp;:&emsp;&emsp; {{item.className}} &emsp;&emsp; : &emsp;&emsp; {{item.distance}} &emsp;&emsp; : &emsp;&emsp; {{item.neighbour}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 2' class="list-group">
+			<span class='col-title'>Attribute 1 &emsp; Attribute 2  &emsp; Class  &emsp; Distance &emsp; Neighbour</span>
+			<li v-for='item in output1' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp;:&emsp;&emsp; {{item.className}} &emsp;&emsp; : &emsp;&emsp; {{item.distance}} &emsp;&emsp; : &emsp;&emsp; {{item.neighbour}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 3' class="list-group">
+			<span class='col-title'>Attribute 1 &emsp; Attribute 2 &emsp; Attribute 3 &emsp;Class  &emsp; Distance &emsp; Neighbour</span>
+			<li v-for='item in output1' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp; - &emsp;&emsp; {{item.A3}} &emsp;&emsp; : &emsp;&emsp; {{item.className}} &emsp;&emsp; : &emsp;&emsp; {{item.distance}} &emsp;&emsp; : &emsp;&emsp; {{item.neighbour}}</li>
+		</ul>
+
+		<ul v-if='this.attCount == 4' class="list-group">
+			<span class='col-title'>Attribute 1 &emsp; Attribute 2 &emsp; Attribute 3 &emsp; Attribute 4 &emsp;Class  &emsp; Distance &emsp; Neighbour</span>
+			<li v-for='item in output1' class='list-group-item'>{{item.A1}} &emsp;&emsp;-&emsp;&emsp; {{item.A2}} &emsp;&emsp; - &emsp;&emsp; {{item.A3}} &emsp;&emsp; - &emsp;&emsp; {{item.A4}} &emsp;&emsp; : &emsp;&emsp; {{item.className}} &emsp;&emsp; : &emsp;&emsp; {{item.distance}} &emsp;&emsp; : &emsp;&emsp; {{item.neighbour}}</li>
+		</ul>
+	</div>
+	</div>
+
+	<div v-if='this.dataSet.length > 1' id='test-instance' class='text-center'>
+		<span>Select K value : </span><input v-model='k' type="number" ><br><br>
+		<span>Test Instance : </span>
+		<input v-if="this.attCount >= 1" v-model='ua1' type="number" placeholder="Attribute 1">
+		<input v-if="this.attCount >= 2" v-model='ua2' type="number" placeholder="Attribute 2">
+		<input v-if="this.attCount >= 3" v-model='ua3' type="number" placeholder="Attribute 3">
+		<input v-if="this.attCount >= 4" v-model='ua4' type="number" placeholder="Attribute 4"><br>
+
+		<button id='knn-btn' class='btn btn-primary' @click='knn()'>Apply KNN</button>
+	</div>
+
+	<div v-if="result == 'enable'" id='result'>
+		<span>Class of Test Instance by KNN : <strong>{{classList[0].className}}</strong></span>
+	</div>
+</div>
+
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src='js/script.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> 
+<script type="text/javascript">
+	let app =	new Vue({
+		el: '#myApp',
+
+		data: {
+			attCount : 0,
+			a1: '',
+			a2: '',
+			a3: '',
+			a4: '',
+			className: '',
+			dataSet : 	[],
+			output1 : [],
+			ua1: '',
+			ua2: '',
+			ua3: '',
+			ua4: '',
+			uClass: '',
+			k: '',
+			state: 'input',
+			classList: [],
+			result: 'disable'
+		},
+
+
+		methods: {
+			addClass(){
+				this.classList.push({'className' : this.className , 'count' : 0});
+				this.className = '';
+			},
+
+			 pushInstance(){
+				if(this.attCount == '1'){
+					this.dataSet.push({"A1": this.a1 , 'className' : this.className });	
+					this.output1.push({"A1": this.a1 , 'className' : this.className });				
+				}	
+				else if(this.attCount == '2'){
+					this.dataSet.push({"A1": this.a1 , "A2" : this.a2 , 'className' : this.className });
+					this.output1.push({"A1": this.a1 , "A2" : this.a2 , 'className' : this.className });
+				}
+				else if(this.attCount == '3'){
+					this.dataSet.push({"A1": this.a1 , "A2" : this.a2 , "A3" : this.a3 , 'className' : this.className });
+					this.output1.push({"A1": this.a1 , "A2" : this.a2 , "A3" : this.a3 , 'className' : this.className });
+				}
+				else if(this.attCount == '4'){
+					this.dataSet.push({"A1": this.a1, "A2" : this.a2 , "A3" : this.a3 , "A4" : this.a4 , 'className' : this.className });
+					this.output1.push({"A1": this.a1, "A2" : this.a2 , "A3" : this.a3 , "A4" : this.a4 , 'className' : this.className });					
+				}
+
+				this.a1 = '';
+				this.a2 = '';
+				this.a3 = '';
+				this.a4 = '';
+				this.className = '';
+			},
+
+		 knn(){
+		 		this.calculateDistance();
+		 		this.state = 'output-1';
+
+		 	let temp = this.output1[0];
+
+		 	for(var i=1 ; i < this.output1.length ; i++ )
+		 	{
+		 		for(var j=0 ; j < this.output1.length - i ; j++)
+		 		{
+		 			if(this.output1[j].distance > this.output1[j+1].distance)
+		 			{
+		 				temp = this.output1[j];
+		 				this.output1[j] = this.output1[j+1];
+		 				this.output1[j+1] = temp;
+		 			}
+		 		}
+		 	}
+
+		 	for(var i=0 ; i < this.output1.length ; i++)
+		 	{
+		 		if(i < parseInt(this.k)){
+		 			this.output1[i].neighbour = 'Yes';
+
+		 		}
+		 		else{
+		 			this.output1[i].neighbour = 'No';
+		 		}
+		 		
+		 	}
+
+		 	//finding the classList count AKA final step
+		 	for(var i = 0 ; i < parseInt(this.k) ; i++)
+		 	{
+		 		for(var j = 0 ; j < this.output1.length ; j++)
+		 		{
+		 			if(this.classList[i].className == this.output1.className)
+		 			{
+		 				this.classList[i].count++;
+		 			}
+		 		}
+		 	}
+
+
+
+		 	for(var i = 1 ; i < this.classList.length ; i++)
+		 	{
+		 		for(var j=0 ; j < this.classList.length - i ; j++)
+		 		{
+		 			if(this.classList[j].count > this.classList[j+1].count)
+		 			{
+		 				temp = classList[j];
+		 				classList[j] = classList[j+1];
+		 				classList[j+1] = temp;
+		 			}
+		 		}
+		 	}
+
+		 	this.result = 'enable';
+		 },
+
+		 calculateDistance(){
+		 	let d = 0;
+
+		 	for(var i=0 ; i<this.output1.length ; i++){
+		 		
+		 		 d = 0;
+
+		 		if(this.attCount == 1){
+		 			d = Math.abs(this.output1[i].A1 - this.ua1);
+
+		 			
+		 		}
+		 		else if(this.attCount == 2){
+		 			d = Math.sqrt(Math.pow((this.output1[i].A1 - this.ua1),2) + Math.pow((this.output1[i].A2 - this.ua2),2));
+		 		}
+		 		else if(this.attCount == 3){
+		 			d = Math.sqrt(Math.pow((this.output1[i].A1 - this.ua1),2) + Math.pow((this.output1[i].A2 - this.ua2),2) + Math.pow((this.output1[i].A3 - this.ua3),2) );
+		 		}
+		 		else if(this.attCount == 4){
+		 			d = Math.sqrt(Math.pow((this.output1[i].A1 - this.ua1),2) + Math.pow((this.output1[i].A2 - this.ua2),2) + Math.pow((this.output1[i].A3 - this.ua3),2) + Math.pow((this.output1[i].A4 - this.ua4),2) ); 
+		 		}
+
+		 		this.output1[i].distance = d.toFixed(4);
+		 	}
+		 	
+		 }
+		}
+		
+	}); 
+</script>
+</body>
+</html>
