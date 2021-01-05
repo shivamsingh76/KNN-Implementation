@@ -53,3 +53,7 @@ li:nth-child(even) {
 #knn-btn{
 	margin: 10px;
 }
+
+strong{
+	font-size: 1.5em;
+}

@@ -12,7 +12,19 @@
 	</header>
 	</div>
 	
-	<div class="text-center" id='att-select'><span>No. of Attributes: </span>
+	<div class="text-center" id='att-select'>
+		<span>Enter Classes: </span>
+  		<input v-model='className' type="text" >
+  		<button class="btn btn-success" @click='addClass()'>Add</button>
+  		<br>
+
+  		<div id='classNumber'>No. of classes : {{classList.length}}
+  			<ul>
+  				<li v-for='object in classList'>{{object.className}}</li>
+  			</ul>
+  		</div>
+
+		<span>No. of Attributes: </span>
 		<select v-model='attCount' name="cars" id="cars">
 		    <option value="1">1</option>
 		    <option value="2">2</option>
@@ -20,15 +32,12 @@
 		    <option value="4">4</option>
   		</select><br>
 
-  		<span>Enter All Classes: </span>
-  		<input v-model='className' type="text" >
-  		<button class="btn btn-success" @click='addClass()'>Add</button>
-
-  		<span id='classNumber'>No. of classes : {{classList.length}}</span>
-
 	</div>
 
 	<div id='attInput'>
+		
+		<h3 v-if='this.attCount >= 1'>Add Instances:</h3>
+
 		<span v-if='this.attCount >= 1'><label>Attribute 1 :&nbsp;</label><input v-model='a1' type="number" ><br><br></span>
 		<span v-if='this.attCount >= 2'><label>Attribute 2 :&nbsp;</label><input v-model='a2' type="number" ><br><br></span>
 		<span v-if='this.attCount >= 3'><label>Attribute 3 :&nbsp;</label><input v-model='a3' type="number" ><br><br></span>
@@ -101,7 +110,9 @@
 	</div>
 
 	<div v-if="result == 'enable'" id='result'>
-		<span>Class of Test Instance by KNN : <strong>{{classList[0].className}}</strong></span>
+		<span>Class of Test Instance by KNN : <strong>{{classList[0].className}}</strong></span><br>
+		<span>KNN matrix : </span>
+		<span v-for='object in classList'>&emsp; {{object.className}} - {{object.count}}  </span>
 	</div>
 </div>
 
@@ -138,6 +149,8 @@
 			addClass(){
 				this.classList.push({'className' : this.className , 'count' : 0});
 				this.className = '';
+
+				console.log('Class added!');
 			},
 
 			 pushInstance(){
@@ -166,6 +179,9 @@
 			},
 
 		 knn(){
+
+		 		console.log('Hi from line 171');
+
 		 		this.calculateDistance();
 		 		this.state = 'output-1';
 
@@ -184,6 +200,8 @@
 		 		}
 		 	}
 
+		 	console.log('Hi from line 191');
+
 		 	for(var i=0 ; i < this.output1.length ; i++)
 		 	{
 		 		if(i < parseInt(this.k)){
@@ -196,12 +214,16 @@
 		 		
 		 	}
 
+		 	console.log('Now will be finding class count XD');
+
 		 	//finding the classList count AKA final step
-		 	for(var i = 0 ; i < parseInt(this.k) ; i++)
+		 	for( i = 0 ; i < this.classList.length ; i++)
 		 	{
-		 		for(var j = 0 ; j < this.output1.length ; j++)
+		 		for(var j = 0 ; j < parseInt(this.k) ; j++)
 		 		{
-		 			if(this.classList[i].className == this.output1.className)
+		 			console.log('i='+ i);
+		 			console.log('j=' + j)
+		 			if(this.classList[i].className == this.output1[j].className)
 		 			{
 		 				this.classList[i].count++;
 		 			}
@@ -211,19 +233,24 @@
 
 
 		 	for(var i = 1 ; i < this.classList.length ; i++)
-		 	{
+		 	{	
+		 		console.log('Inside i for loop, i= '+i);
 		 		for(var j=0 ; j < this.classList.length - i ; j++)
 		 		{
-		 			if(this.classList[j].count > this.classList[j+1].count)
+		 			console.log(' j= '+j);
+		 			if(this.classList[j].count < this.classList[j+1].count)
 		 			{
-		 				temp = classList[j];
-		 				classList[j] = classList[j+1];
-		 				classList[j+1] = temp;
+		 				temp = this.classList[j];
+		 				this.classList[j] = this.classList[j+1];
+		 				this.classList[j+1] = temp;
+
+		 				console.log('Done swaping here.')
 		 			}
 		 		}
 		 	}
 
 		 	this.result = 'enable';
+		 	console.log('result enabled!');
 		 },
 
 		 calculateDistance(){
